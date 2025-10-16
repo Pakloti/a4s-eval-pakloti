@@ -1,6 +1,7 @@
 from datetime import datetime
 import numpy as np
 import pandas as pd
+import torch
 
 from a4s_eval.data_model.evaluation import DataShape, Dataset, Model
 from a4s_eval.data_model.measure import Measure
@@ -16,19 +17,39 @@ def accuracy(
     functional_model: FunctionalModel,
 ) -> list[Measure]:
     
-    # Both x and y (the features and the target) are contained in dataset.data as a dataframe.
-    # To identify the target (y), use the datashape.target object, which has a name property. Use this property to index the aforementioned dataframe.
-    # To identify the features (x), use the datashape.features list of object. Similarly each object in this list has a name property to index the dataframe.
+    """
+    Compute accuracy = number of correct predictions / total number of predictions.
+    """
+
+    df = dataset.data
     
-    # Inspect FunctionalModel definition to identify the function to use to compute the model predictions.
-    
-    # Use the y (from the dataset.data) and the prediction to cumpute the accuracy.
-    
-    # Below is a placeholder that allows pytest to pass.
-    
-    # If this takes too many resources (e.g., runs very long or causes a memory error), feel free to limit the dataset to the first 10,000 examples.
-    
-    accuracy_value = 0.99
-    
+    # Identify label and features from DataShape
+    label_col = datashape.target.name
+    feature_cols = [f.name for f in datashape.features]
+
+    # Extract X (features) and y (true labels)
+    X = df[feature_cols]
+    y_true = df[label_col]
+
+    # 🔧 Convert DataFrame → NumPy array → Torch Tensor
+    # Model expects float32 tensors, not pandas DataFrames.
+    X_np = X.to_numpy(dtype=np.float32, copy=False)
+    X_tensor = torch.from_numpy(X_np)
+
+    # Use the functional model to predict
+    y_pred = functional_model.predict(X_tensor)
+
+    # Ensure arrays for consistent comparison
+    y_pred = np.asarray(y_pred).flatten()
+    y_true = np.asarray(y_true).flatten()
+
+    # Compute accuracy
+    correct = np.sum(y_pred == y_true)
+    total = len(y_true)
+    accuracy_value = correct / total if total > 0 else 0.0
+
+    # Record the timestamp
     current_time = datetime.now()
+
+    # Return result as a list of Measure objects
     return [Measure(name="accuracy", score=accuracy_value, time=current_time)]
