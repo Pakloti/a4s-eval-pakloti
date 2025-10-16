@@ -33,29 +33,23 @@ def accuracy(
     label_col = datashape.target.name
     feature_cols = [f.name for f in datashape.features]
 
-    # Extract X (features) and y (true labels)
     X = df[feature_cols]
     y_true = df[label_col]
 
-    # 🔧 Convert DataFrame → NumPy array → Torch Tensor
-    # Model expects float32 tensors, not pandas DataFrames.
+    #Convert DataFrame to NumPy array to Torch Tensor
     X_np = X.to_numpy(dtype=np.float32, copy=False)
     X_tensor = torch.from_numpy(X_np)
-
-    # Use the functional model to predict
     y_pred = functional_model.predict(X_tensor)
 
-    # Ensure arrays for consistent comparison
     y_pred = np.asarray(y_pred).flatten()
     y_true = np.asarray(y_true).flatten()
 
-    # Compute accuracy
+    # Calculate accuracy
     correct = np.sum(y_pred == y_true)
     total = len(y_true)
     accuracy_value = correct / total if total > 0 else 0.0
 
-    # Record the timestamp
+    # Timestamp
     current_time = datetime.now()
-
-    # Return result as a list of Measure objects
+    
     return [Measure(name="accuracy", score=accuracy_value, time=current_time)]

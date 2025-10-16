@@ -1,7 +1,7 @@
 from a4s_eval.metric_registries.model_metric_registry import model_metric
 from a4s_eval.data_model.measure import Measure
 from a4s_eval.data_model.evaluation import Dataset, DataShape
-from a4s_eval.metric_registries.model_metric_registry import Model, ModelMetric, FunctionalModel
+from a4s_eval.metric_registries.model_metric_registry import Model, FunctionalModel
 
 @model_metric(name="accuracy")
 def accuracy(
@@ -12,13 +12,6 @@ def accuracy(
 ) -> list[Measure]:
     """
     Calculate model accuracy of the dataset.
-    Accuracy = number of correct predictions / total number of predictions.
-    
-    Argumentss:
-        datashape: describes which column is the target and which are features.
-        model: the trained model object.
-        dataset: contains the data as a pandas DataFrame.
-        functional_model: standardized interface to make predictions.
     """
     
     df = dataset.data
