@@ -1,6 +1,5 @@
 from datetime import datetime
 import numpy as np
-import pandas as pd
 import torch
 
 from a4s_eval.data_model.evaluation import DataShape, Dataset, Model
@@ -18,7 +17,14 @@ def accuracy(
 ) -> list[Measure]:
     
     """
-    Compute accuracy = number of correct predictions / total number of predictions.
+    Calculate model accuracy of the dataset.
+    Accuracy = number of correct predictions / total number of predictions.
+    
+    Argumentss:
+        datashape: describes which column is the target and which are features.
+        model: the trained model object.
+        dataset: contains the data as a pandas DataFrame.
+        functional_model: standardized interface to make predictions.
     """
 
     df = dataset.data

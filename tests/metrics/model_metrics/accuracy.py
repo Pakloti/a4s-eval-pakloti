@@ -13,7 +13,14 @@ def accuracy(
     """
     Calculate model accuracy of the dataset.
     Accuracy = number of correct predictions / total number of predictions.
+    
+    Argumentss:
+        datashape: describes which column is the target and which are features.
+        model: the trained model object.
+        dataset: contains the data as a pandas DataFrame.
+        functional_model: standardized interface to make predictions.
     """
+    
     df = dataset.data
     label_col = "charged_off"
     y_true = df[label_col]
@@ -29,7 +36,4 @@ def accuracy(
     total=len(y_true)
     acc = (correct / total) if total else 0.0
     
-    return [Measure(name="accuracy", value=acc, unit="ratio")]
-
-
-    
+    return [Measure(name="accuracy", value=acc, unit="ratio")]    
