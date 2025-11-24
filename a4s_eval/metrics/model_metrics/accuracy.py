@@ -15,11 +15,10 @@ def accuracy(
     dataset: Dataset,
     functional_model: FunctionalModel,
 ) -> list[Measure]:
-    
     """
     Calculate model accuracy of the dataset.
     Accuracy = number of correct predictions / total number of predictions.
-    
+
     Argumentss:
         datashape: describes which column is the target and which are features.
         model: the trained model object.
@@ -28,7 +27,7 @@ def accuracy(
     """
 
     df = dataset.data
-    
+
     # Identify label and features from DataShape
     label_col = datashape.target.name
     feature_cols = [f.name for f in datashape.features]
@@ -36,7 +35,7 @@ def accuracy(
     X = df[feature_cols]
     y_true = df[label_col]
 
-    #Convert DataFrame to NumPy array to Torch Tensor
+    # Convert DataFrame to NumPy array to Torch Tensor
     X_np = X.to_numpy(dtype=np.float32, copy=False)
     X_tensor = torch.from_numpy(X_np)
     y_pred = functional_model.predict(X_tensor)
@@ -51,5 +50,5 @@ def accuracy(
 
     # Timestamp
     current_time = datetime.now()
-    
+
     return [Measure(name="accuracy", score=accuracy_value, time=current_time)]

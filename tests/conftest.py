@@ -9,10 +9,11 @@ N_SAMPLES: int | None = 1000
 
 def sample(df: pd.DataFrame) -> pd.DataFrame:
     if N_SAMPLES:
-        out : pd.DataFrame = df.iloc[:N_SAMPLES]
+        out: pd.DataFrame = df.iloc[:N_SAMPLES]
         return out
-    
+
     return df
+
 
 def get_splits(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     t = pd.to_datetime(df[DATE_FEATURE])
@@ -34,6 +35,7 @@ def dataset() -> pd.DataFrame:
 @pytest.fixture(scope="session")
 def train_data(dataset: pd.DataFrame) -> pd.DataFrame:
     return sample(get_splits(dataset)[0])
+
 
 @pytest.fixture(scope="session")
 def test_data(dataset: pd.DataFrame) -> pd.DataFrame:

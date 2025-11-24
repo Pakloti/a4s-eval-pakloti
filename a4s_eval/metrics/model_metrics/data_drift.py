@@ -22,7 +22,7 @@ def data_drift(
 
     Compute data drift between the model's training dataset (reference)
     and the current dataset using Evidently's DataDriftPreset.
-    
+
     Returns:
     A single Measure containing the share of drifted columns.
     """
@@ -38,9 +38,7 @@ def data_drift(
     result_dict = results["metrics"][0]["result"]
 
     # Check if dataset is considered as drifted or not
-    dataset_drift: bool = result_dict["dataset_drift"]
-    share_of_drifted_columns: float = result_dict["share_of_drifted_columns"]
-    drift_score = float(share_of_drifted_columns)
+    drift_score = float(result_dict["share_of_drifted_columns"])
 
     return [
         Measure(

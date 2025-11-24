@@ -3,30 +3,30 @@ from a4s_eval.data_model.measure import Measure
 from a4s_eval.data_model.evaluation import Dataset, DataShape
 from a4s_eval.metric_registries.model_metric_registry import Model, FunctionalModel
 
+
 @model_metric(name="accuracy")
 def accuracy(
     datashape: DataShape,
     model: Model,
     dataset: Dataset,
-    functional_model: FunctionalModel,    
+    functional_model: FunctionalModel,
 ) -> list[Measure]:
     """
     Calculate model accuracy of the dataset.
     """
-    
+
     df = dataset.data
     label_col = "charged_off"
     y_true = df[label_col]
-    X= df.drop(columns=[label_col])
-    
+    X = df.drop(columns=[label_col])
+
     if hasattr(model, "predict"):
         y_pred = model.predict(X)
     else:
         y_pred = functional_model.predict(X)
-        
-        
-    correct=sum(int(p == t) for p,t in zip(y_pred, y_true))
-    total=len(y_true)
+
+    correct = sum(int(p == t) for p, t in zip(y_pred, y_true))
+    total = len(y_true)
     acc = (correct / total) if total else 0.0
-    
-    return [Measure(name="accuracy", value=acc, unit="ratio")]    
+
+    return [Measure(name="accuracy", value=acc, unit="ratio")]
