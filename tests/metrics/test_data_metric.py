@@ -2,7 +2,6 @@ from datetime import datetime
 from uuid import uuid4
 import pandas as pd
 
-# 🔥 Imports EXACTEMENT comme tu veux
 from a4s_eval.data_model.evaluation import (
     Dataset,
     DataShape,
@@ -15,7 +14,6 @@ from a4s_eval.metrics.model_metrics.data_drift import data_drift
 
 
 def test_data_drift_metric_multiple_runs():
-    # --- Fake datasets ---
     reference_df = pd.DataFrame(
         {
             "x": [1, 2, 3, 4],
@@ -30,12 +28,11 @@ def test_data_drift_metric_multiple_runs():
         }
     )
 
-    # --- Build Feature list (uses pid, NOT id) ---
     features = []
     for col in reference_df.columns:
         features.append(
             Feature(
-                pid=uuid4(),  # <-- FIX HERE
+                pid=uuid4(),
                 name=col,
                 feature_type=FeatureType.FLOAT,
                 min_value=float(reference_df[col].min()),
@@ -43,7 +40,6 @@ def test_data_drift_metric_multiple_runs():
             )
         )
 
-    # --- Dataset objects ---
     reference_dataset = Dataset(
         pid=uuid4(),
         name="ref",
@@ -68,21 +64,18 @@ def test_data_drift_metric_multiple_runs():
         created_at=datetime.now(),
     )
 
-    # --- Dummy model ---
     dummy_model = Model(
         pid=uuid4(),
         model=None,
         dataset=reference_dataset,
     )
 
-    # --- FunctionalModel placeholder ---
     functional_model = FunctionalModel(
         predict=lambda x: x,
         predict_proba=lambda x: x,
         predict_with_grad=lambda x: (x, x),
     )
 
-    # --- Run metric 20 times ---
     results = []
     for _ in range(20):
         out = data_drift(
@@ -93,7 +86,6 @@ def test_data_drift_metric_multiple_runs():
         )
         results.extend(out)
 
-    # --- Checks ---
     assert len(results) == 20
     for measure in results:
         assert measure.name == "data_drift"

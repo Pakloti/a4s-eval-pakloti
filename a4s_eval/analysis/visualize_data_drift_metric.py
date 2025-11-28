@@ -15,9 +15,6 @@ df = df.sort_values("time")
 
 os.makedirs("metric_visuals", exist_ok=True)
 
-# -------------------------------------------------------
-# 1. COURBE DU DRIFT DANS LE TEMPS
-# -------------------------------------------------------
 
 plt.figure(figsize=(10, 5))
 plt.plot(df["time"], df["score"], marker="o", linewidth=2)
@@ -29,9 +26,6 @@ plt.tight_layout()
 plt.savefig("metric_visuals/drift_timeseries.png", dpi=300)
 plt.show()
 
-# -------------------------------------------------------
-# 2. COURBE + ROLLING AVERAGE (tendance)
-# -------------------------------------------------------
 
 df["rolling"] = df["score"].rolling(window=5, min_periods=1).mean()
 
@@ -47,9 +41,6 @@ plt.tight_layout()
 plt.savefig("metric_visuals/drift_timeseries_rolling.png", dpi=300)
 plt.show()
 
-# -------------------------------------------------------
-# 3. Histogramme de la distribution des scores
-# -------------------------------------------------------
 
 plt.figure(figsize=(8, 5))
 sns.histplot(df["score"], kde=True)
@@ -60,9 +51,6 @@ plt.tight_layout()
 plt.savefig("metric_visuals/drift_score_distribution.png", dpi=300)
 plt.show()
 
-# -------------------------------------------------------
-# 4. Donut chart : drift élevé vs normal
-# -------------------------------------------------------
 
 threshold = 0.25
 high_drift = (df["score"] > threshold).sum()
