@@ -4,7 +4,7 @@ import pytest
 
 
 DATE_FEATURE = "issue_d"
-N_SAMPLES: int | None = 1000
+N_SAMPLES: int | None = 100000
 
 
 def sample(df: pd.DataFrame) -> pd.DataFrame:

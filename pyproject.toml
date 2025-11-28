@@ -24,6 +24,8 @@ dependencies = [
     "torch>=2.8.0",
     "numpy>=2.3.0",
     "evidently == 0.4.28",
+    "matplotlib>=3.10.7",
+    "seaborn>=0.13.2",
 ]
 
 [dependency-groups]
