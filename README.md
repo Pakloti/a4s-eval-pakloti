@@ -1,78 +1,124 @@
-# A4S Evaluation module
+# **A4S – Data Drift Metric & Model Robustness Evaluation**
 
-# Quickstart for Evaluation module
 
-## How to run within local development environment
 
-### Prerequisites
-To run the local development environment, you need first to launch the services containers (database, redis, etc.). Please checkout API repo for instructions on how to do this.
+This project implements a **data drift metric** and is used to evaluate how different machine learning models react when the input data distribution changes.
 
-### Configuration of development environment
-We use `uv` as environment manager, you can configure python dependencies with the following command:
+It is part of the A4S evaluation framework at the University of Luxembourg.
 
-```bash
-uv sync --frozen --group dev
+
+
+------
+
+
+
+## **Features**
+
+
+
+- **Data Drift Metric** implemented using *Evidently*
+- **Synthetic drift generation** over 50 iterations
+- **Model evaluation under drift** (Logistic Regression, Random Forest, SVM)
+- **Final notebook** with visual analysis and model comparison
+
+
+
+------
+
+
+
+## **Installation**
+
+
+
+This project uses uv for environment and dependency management.
+
+``` 
+uv venv
+source .venv/bin/activate
+uv sync
 ```
 
-<!-- We provide a pre-commit hook to automatically check and format your code before each commit. You can install the pre-commit hooks with the following command:
 
-```bash
-uv run pre-commit install
-``` -->
 
-### Launching locally the A4S Evaluation API
-With the services running, you can now launch the A4S Evaluation API locally.
+------
 
-```bash
-uv sync --frozen --group dev
-bash tasks/start_api.sh
-```
 
-### Launching locally the A4S Evaluation Worker
-With the services running, you can now launch the A4S Evaluation Worker locally.
 
-```bash
-uv sync --frozen --group dev
-bash tasks/start_worker.sh
-```
+## **1. Generate Drift Metric Scores**
 
-### How to manually run linter
-We use ruff for linting. This step is automatically run before each commit if the pre-commit hooks are configured.
 
-To manually run the linter, you can use the following command:
 
-```bash
-uv sync --frozen --group dev
-uv run ruff check .
-uv run ruff format .
-```
+This script creates 50 drifted versions of the test dataset and computes the drift score for each one.
 
-### How to run tests
-To run the unit tests, you can use the following command:
+` uv run python a4s_eval/analysis/generate_drift_metric_dataset.py `
 
-```bash
-uv sync --frozen --group test
-uv run pytest tests/
-```
+Output file: → tests/data/measures/data_drift.csv
 
-### How to log and customise logs
+This CSV contains one drift score per synthetic scenario.
 
-We use a single package-wide logger named as the main package: `a4s_api`.
 
-To log, simply import the logger and use it:
 
-```python
-from a4s_api.utils import get_logger
+------
 
-get_logger().info("This is an info message")
-get_logger().error("This is an error message")
-```
 
-You can customize the logging configuration by modifying the `./config/logging.yaml` file.
 
-For instance, in the loggers section, you can customize the level of logging for different loggers, such as the `a4s_api` logger (containing our messages) or the `uvicorn` and `sqlalchemy` loggers.
+## **2. Train & Evaluate ML Models**
 
-You can also customize the message format by modifying the `formatters.colored.format` field in the loggers section.
-See [official Python documentation on LogRecord attributes](https://docs.python.org/3/library/logging.html#logrecord-attributes) for a full list of available fields.
 
-Please do not push your local changes, except if necessary. For instance, DEBUG log in `logging.yaml` should not be pushed.
+
+Three models are trained on the reference dataset and evaluated across all drifted datasets:
+
+- Logistic Regression
+- Random Forest
+- Support Vector Machine (SVM)
+
+
+
+Run:
+
+` uv run python a4s_eval/analysis/run_models.py `
+
+Outputs:
+
+tests/data/measures/results_logreg.csv
+tests/data/measures/results_randomforest.csv
+tests/data/measures/results_svm.csv
+
+Each file contains the model accuracy for each drift scenario.
+
+
+
+------
+
+
+
+## **Notebook Analysis**
+
+
+
+The notebook Data_Drift_Metric_Notebook.ipynb provides:
+
+
+
+- visualization of drift over time
+- comparison of model accuracies
+- correlation between drift and model performance
+- final robustness comparison.
+
+
+
+------
+
+
+
+## **Acknowledgments**
+
+
+
+This work was completed as part of the **Advanced Software Systems (A4S)** course at the **University of Luxembourg**.
+
+
+
+------
+
