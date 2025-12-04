@@ -10,6 +10,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
 import warnings
+
 warnings.filterwarnings("ignore")
 
 
@@ -26,11 +27,14 @@ TARGET = "charged_off"
 if TARGET not in reference_df.columns:
     raise ValueError(f"Target column '{TARGET}' not found in dataset.")
 
+
 def select_numeric_features(df):
     return [
-        col for col in df.columns
+        col
+        for col in df.columns
         if col != TARGET and pd.api.types.is_numeric_dtype(df[col])
     ]
+
 
 numeric_cols = select_numeric_features(reference_df)
 if not numeric_cols:
@@ -49,7 +53,7 @@ y_test = current_df_base[TARGET].values
 models = {
     "logreg": LogisticRegression(max_iter=200),
     "randomforest": RandomForestClassifier(n_estimators=100),
-    "svm": SVC(kernel="rbf")
+    "svm": SVC(kernel="rbf"),
 }
 
 for name, model in models.items():
@@ -66,7 +70,6 @@ rf_results = []
 svm_results = []
 
 for i in range(n_runs):
-
     # Create a copy to use as drifted data
     curr_df = current_df_base.copy()
 
@@ -84,8 +87,12 @@ for i in range(n_runs):
     y_test_drifted = curr_df[TARGET].values
 
     # Evaluate every model
-    acc_logreg = accuracy_score(y_test_drifted, models["logreg"].predict(X_test_drifted))
-    acc_rf = accuracy_score(y_test_drifted, models["randomforest"].predict(X_test_drifted))
+    acc_logreg = accuracy_score(
+        y_test_drifted, models["logreg"].predict(X_test_drifted)
+    )
+    acc_rf = accuracy_score(
+        y_test_drifted, models["randomforest"].predict(X_test_drifted)
+    )
     acc_svm = accuracy_score(y_test_drifted, models["svm"].predict(X_test_drifted))
 
     timestamp = (base_time + timedelta(days=i)).strftime("%Y-%m-%dT%H:%M:%S")
@@ -98,8 +105,14 @@ for i in range(n_runs):
 out_dir = ROOT / "tests" / "data" / "measures"
 out_dir.mkdir(exist_ok=True, parents=True)
 
-pd.DataFrame(logreg_results, columns=["time", "accuracy"]).to_csv(out_dir / "results_logreg.csv", index=False)
-pd.DataFrame(rf_results, columns=["time", "accuracy"]).to_csv(out_dir / "results_randomforest.csv", index=False)
-pd.DataFrame(svm_results, columns=["time", "accuracy"]).to_csv(out_dir / "results_svm.csv", index=False)
+pd.DataFrame(logreg_results, columns=["time", "accuracy"]).to_csv(
+    out_dir / "results_logreg.csv", index=False
+)
+pd.DataFrame(rf_results, columns=["time", "accuracy"]).to_csv(
+    out_dir / "results_randomforest.csv", index=False
+)
+pd.DataFrame(svm_results, columns=["time", "accuracy"]).to_csv(
+    out_dir / "results_svm.csv", index=False
+)
 
 print("All CSV files written to:", out_dir)
